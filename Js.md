@@ -90,7 +90,7 @@ Then the engine's code for `typeof`:
 - boolean
 - undefined
 - object
--  [Js.md](Js.md) function
+-  function
 - symbol(es6)
 - Bitint(es6)
 
@@ -118,4 +118,99 @@ if语句判断表达式的结果是*True还是false*，若传入非boolean类型
 因此我们可以用`!!obj`根据真假值性质强制转换为boolean型
 
 ## 1.3 Symbol
+
+用于创建匿名且唯一的对象键值
+
+```javascript
+//创建
+let a = Symbol('this is a')//描述可选
+a.toString()//Symbol('this is a')
+let b = Symbol('this is b')
+
+//使用
+let obj = {
+    [a]:foo,
+    [b]:bar,
+    c:"this is c"
+}//必须使用[],否则当作字符串
+obj[a]//foo，只能用[]访问，因为.后当作字符串处理
+
+//
+Symbol.for('foo') === Symbol.for('foo')//检查全局中是否有key === 'foo'的Symbol，如果有，返回它，没有则创建并登记
+Symbol.keyFor(a)//undefined返回登记的key
+
+//遍历
+Object.getOwnPropertySymbols(obj);
+//[Symbol(this is a),Symbol(this is b)]
+//使用for.. in 得不到Symblo
+Reflect.ownKeys(obj)
+//[Symbol(this is a),Symbol(this is b),"c"]
+```
+
+## 1.4 Object
+
+### Set
+
+set可以储存任何类型的唯一的值，包括原始值或对象引用，比较方法类似于`===`，特殊在NaN
+
+```javascript
+//创建
+let s = new Set()
+let s1 = new Set([1,1,1,2,2,3,NaN,NaN])//[1,2,3,NaN]
+//CRUD
+s.add(1)
+s.delete(1)
+s.has(1)
+s.clear()
+//遍历
+for (let item of s.values()){
+    //do something
+}
+s.keys()
+//set没有keys，实际返回
+s.values()
+//也可以直接for...of 遍历 set，因为和数组一样默认可遍历
+s.entries()
+```
+
+数组的`map`和`filter`都可以用于set，因此可以和简单实现交并差集合
+
+### WeakSet
+
+weakSet只能储存对象，特点在于不计入对象的引用，因此不存在内存泄漏问题，适合临时储存一些对象比如DOM节点：当这些节点被文档移除时，不会发生内存泄漏。
+
+同时由于垃圾回收机制的不可预测，weakset不可遍历
+
+```javascript
+//任何可迭代对象都作为参数初始化weakset，该对象的所有成员（也必须对象），都会自动成为 WeakSet 实例对象的成员。
+const a = [[1, 2], [3, 4]];
+const ws = new WeakSet(a);
+// WeakSet {[1, 2], [3, 4]}
+//add,delete,has
+```
+
+### Map
+
+内置的object，本质上就是一种键值对的hash结构，但key值只能使用字符串。
+
+map的key可以是任何类型（包括对象）
+
+```javascript
+let obj = {o:"this is o"}
+let map = new Map()
+map.set(obj,"this is also o")//返回map本身
+map.get(obj)//this is also o 返回value
+```
+
+若key重复（以内存地址为准）添加，覆盖。
+
+### WeakMap
+
+`WeakMap`的专用场合就是，它的key所对应的对象，可能会在将来消失。
+
+一个典型应用场景是，在网页的 DOM 元素上添加数据，就可以使用`WeakMap`结构。当该 DOM 元素被清除，其所对应的`WeakMap`记录就会自动被移除。
+
+WeakMap 的另一个用处是部署私有属性。
+
+但是，WeakMap 弱引用的只是key，而不是value。键值依然是正常引用。
 
