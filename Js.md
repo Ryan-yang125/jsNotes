@@ -214,3 +214,9 @@ WeakMap 的另一个用处是部署私有属性。
 
 但是，WeakMap 弱引用的只是key，而不是value。键值依然是正常引用。
 
+# 2.EventLoop
+
+![eventloop1](https://gitee.com/untermrad/picture-bed/raw/master/upic/eventloop1i9J4Gq.png)
+
+Promise -> microtask
+
